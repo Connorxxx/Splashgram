@@ -1,6 +1,7 @@
 package com.connor.unsplashgram.ui
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import coil.transform.CircleCropTransformation
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.databinding.ItemLoadBinding
 import com.connor.unsplashgram.logic.model.UnsplashPhoto
+import com.connor.unsplashgram.logic.tools.Tools.loadWithQuality
 import java.lang.Integer.max
 
 class LoadAdapter(private val ctx: Context, private val photosList: List<UnsplashPhoto>) :
@@ -45,12 +47,27 @@ class LoadAdapter(private val ctx: Context, private val photosList: List<Unsplas
             parent,
             false
         )
+        val holder = ViewHolder(binding)
+        holder.getBinding().imgLoad.setOnClickListener {
+
+            val imgSource = holder.getBinding().photo?.urls?.regular
+            val imgFull = holder.getBinding().photo?.urls?.full
+            val userName = holder.getBinding().photo?.user?.name
+            val userProfile = holder.getBinding().photo?.user?.profile_image?.large
+            val downloadUrl = holder.getBinding().photo?.urls?.raw
+            val id = holder.getBinding().photo?.id
+
+            val intent = Intent(ctx, PhotoDetailActivity::class.java).apply {
+                putExtra("image_regular", imgSource)
+                putExtra("image_full", imgFull)
+                putExtra("text_user_name", userName)
+                putExtra("user_profile", userProfile)
+                putExtra("download_url", downloadUrl)
+                putExtra("id", id)
+            }
+            ctx.startActivity(intent)
+        }
         return ViewHolder(binding)
-//        val view = LayoutInflater.from(parent.context).inflate(
-//            R.layout.item_load,
-//            parent, false
-//        )
-//        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -89,25 +106,6 @@ class LoadAdapter(private val ctx: Context, private val photosList: List<Unsplas
             && scrollState != SCROLL_STATE_IDLE // 列表正在滚动
         ) {
             onPreload?.invoke()
-        }
-    }
-
-    private fun ImageView.loadWithQuality(
-        highQuality: String,
-        lowQuality: String,
-        placeholderRes: Int? = null,
-        errorRes: Int? = null
-    ) {
-        load(lowQuality) {
-            placeholderRes?.let {
-                placeholder(placeholderRes)
-            }
-            listener(onSuccess = { _, _ ->
-                load(highQuality) {
-                    placeholder(drawable) // If there was a way to not clear existing image before loading, this would not be required
-                    errorRes?.let { error(errorRes) }
-                }
-            })
         }
     }
 }

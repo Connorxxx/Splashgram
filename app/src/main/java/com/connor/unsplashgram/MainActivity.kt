@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initViewModel() {
-        swipeRefreshLayout.setOnRefreshListener {
+        srlViewer.setOnRefreshListener {
             viewModel.loadPhotos(App.ACCESS_KEY)
         }
         viewModel.loadPhotos(App.ACCESS_KEY)
@@ -60,9 +59,9 @@ class MainActivity : AppCompatActivity() {
                 viewModel.loadList.clear()
                 viewModel.loadList.addAll(load)
                 adapter.notifyDataSetChanged()
-                swipeRefreshLayout.isRefreshing = false
+                srlViewer.isRefreshing = false
             } else {
-                swipeRefreshLayout.isRefreshing = false
+                srlViewer.isRefreshing = false
                 Tools.showSnackBar(recyclerview, "NetWork ERROR")
                 Log.d(App.TAG, "onCreate: ${it.isFailure}")
                 it.exceptionOrNull()?.printStackTrace()

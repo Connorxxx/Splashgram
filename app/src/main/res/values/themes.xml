@@ -8,13 +8,19 @@
         <item name="android:navigationBarColor">@color/navigationBar</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
-    <style name="MainActivityTheme" parent="Theme.Unsplashgram">
+
+    <style name="PhotoDetailActivityTheme" parent="Theme.Unsplashgram">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
+
     <style name="AppToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:textColorPrimary">@android:color/background_dark</item>
-        <item name="android:textColorSecondary">@android:color/background_dark</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
     </style>
+
     <style name="AppToolbar2" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
@@ -28,4 +34,13 @@
         <item name="android:shadowRadius">4</item>
         <item name="android:shadowColor">@color/gray_deep</item>
     </style>
+
+    <style name="Theme.Unsplashgram.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Unsplashgram.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Unsplashgram.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

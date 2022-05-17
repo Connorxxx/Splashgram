@@ -49,6 +49,7 @@ class SearchActivity : AppCompatActivity() {
         }
         imgClean.setOnClickListener {
             etSearch.setText("")
+            imgClean.visibility = View.GONE
         }
         viewModel.searchLiveData.observe(this, Observer {
             val result = it.getOrNull()
@@ -57,6 +58,8 @@ class SearchActivity : AppCompatActivity() {
                 viewModel.searchList.addAll(result.results)
                 adapter.notifyDataSetChanged()
                 recyclerview2.scrollToPosition(0)
+            } else {
+                Tools.showSnackBar(recyclerview2, "No photos here, Please check...")
             }
         })
         viewModel.loadPageLiveData.observe(this, Observer {
@@ -66,7 +69,7 @@ class SearchActivity : AppCompatActivity() {
                 viewModel.searchList.addAll(result.results)
                 adapter.notifyDataSetChanged()
             } else {
-                Tools.showSnackBar(recyclerview, "NetWork ERROR")
+               // Tools.showSnackBar(recyclerview2, "null")
             }
         })
 

@@ -15,9 +15,23 @@
         android:theme="@style/Theme.Unsplashgram"
         android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
         <activity
+            android:name=".common.BaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PhotoViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.TestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PhotoDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:theme="@style/PhotoDetailActivityTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+        <activity
             android:name=".ui.SearchActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
