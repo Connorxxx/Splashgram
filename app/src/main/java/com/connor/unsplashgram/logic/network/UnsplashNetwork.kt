@@ -17,6 +17,10 @@ object UnsplashNetwork {
     suspend fun loadPhotos(clientId: String, page: Int, pageSize: Int) =
         UnsplashService.loadPhotos(clientId, page, pageSize).await()
 
+    suspend fun searchPhotos(clientId: String, criteria: String, page: Int, pageSize: Int) =
+        UnsplashService.searchPhotos(clientId, criteria, page, pageSize).await()
+
+
     private suspend fun <T> Call<T>.await(): T {
         return suspendCoroutine {
             enqueue(object : Callback<T> {

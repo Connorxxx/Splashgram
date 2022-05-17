@@ -1,8 +1,11 @@
 package com.connor.unsplashgram.logic.model
 
-//data class UnsplashResponse(
-//    val photos: List<UnsplashPhoto>
-//)
+data class SearchResponse(
+    val total: Int,
+    val total_pages: Int,
+    val results: List<UnsplashPhoto>
+)
+
 data class UnsplashPhoto(
     val id: String,
     val created_at: String,
@@ -14,6 +17,26 @@ data class UnsplashPhoto(
     val urls: UnsplashUrls,
     val links: UnsplashLinks,
     val user: UnsplashUser
+)
+
+data class UnsplashUrls(
+    val thumb: String?,
+    val small: String,
+    val medium: String?,
+    val regular: String?,
+    val large: String?,
+    val full: String?,
+    val raw: String?
+)
+
+data class UnsplashLinks(
+    val self: String,
+    val html: String,
+    val photos: String?,
+    val likes: String?,
+    val portfolio: String?,
+    val download: String?,
+    val download_location: String?
 )
 
 data class UnsplashUser(
@@ -30,22 +53,4 @@ data class UnsplashUser(
     val links: UnsplashLinks
 )
 
-data class UnsplashLinks(
-    val self: String,
-    val html: String,
-    val photos: String?,
-    val likes: String?,
-    val portfolio: String?,
-    val download: String?,
-    val download_location: String?
-)
 
-data class UnsplashUrls(
-    val thumb: String?,
-    val small: String,
-    val medium: String?,
-    val regular: String?,
-    val large: String?,
-    val full: String?,
-    val raw: String?
-)

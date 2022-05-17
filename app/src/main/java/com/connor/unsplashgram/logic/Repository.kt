@@ -23,6 +23,19 @@ object Repository {
         }
     }
 
+    fun searchPhotos(clientId: String, criteria: String, page: Int, pageSize: Int) = fire(Dispatchers.IO) {
+        Log.d(App.TAG, "searchPhotos: begin")
+        val searchResponse = UnsplashNetwork.searchPhotos(clientId, criteria, page, pageSize)
+        if (searchResponse.results[1].id.isNotEmpty()) {
+            val result = searchResponse
+            Log.d(App.TAG, "Repository: searchPhotos: $result")
+            Result.success(result)
+        } else {
+            Log.d(App.TAG, "Repository: searchPhotos: $searchResponse")
+            Result.failure(java.lang.RuntimeException("response status is $searchResponse"))
+        }
+    }
+
     private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) =
         liveData<Result<T>>(context) {
             val result = try {

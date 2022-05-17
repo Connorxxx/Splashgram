@@ -18,11 +18,11 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:titleEnabled="false"
-            app:toolbarId="@+id/toolbar">
+            app:toolbarId="@+id/toolbarSearch">
 
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/toolbarSearch"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
@@ -41,34 +41,6 @@
 
             </androidx.appcompat.widget.Toolbar>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardSearch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp"
-                android:visibility="gone"
-                app:cardCornerRadius="12dp">
-
-                <ImageView
-                    android:id="@+id/imgClear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_margin="12dp"
-                    app:srcCompat="@drawable/ic_baseline_clear_24" />
-
-                <EditText
-                    android:id="@+id/edSearch"
-                    style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:focusable="true"
-                    android:hint="Search free photos"
-                    android:inputType="textPersonName" />
-            </androidx.cardview.widget.CardView>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

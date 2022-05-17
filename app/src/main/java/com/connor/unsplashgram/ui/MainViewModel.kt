@@ -17,13 +17,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainViewModel : ViewModel() {
 
-    lateinit var imm: InputMethodManager
-
     var pageSize = 20
     var page = 1
 
     private val collectionsLiveData = MutableLiveData<String>()
     private val pageLiveData = MutableLiveData<Int>()
+
 
     val loadList = ArrayList<UnsplashPhoto>()
 
@@ -41,40 +40,6 @@ class MainViewModel : ViewModel() {
 
     fun loadPage(page: Int) {
         pageLiveData.value = page
-    }
-
-    fun actionDone(editText: EditText, cardView: CardView) {
-        editText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchWithUrl(editText)
-                cardView.visibility = View.GONE
-            }
-            return@setOnEditorActionListener true
-        }
-    }
-
-    fun searchByUrl(editText: EditText) {
-        imm = editText.context
-            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        editText.apply {
-            requestFocus()
-            imm.showSoftInput(editText, 0)
-        }
-        if (editText.text.isNotEmpty()) searchWithUrl(editText)
-    }
-
-    private fun searchWithUrl(editText: EditText) {
-           // swipeRefreshLayout.isRefreshing = true
-            hideKeyboard(editText)
-          //  searchSauceNao(ptUrl.text.toString())
-
-            editText.setText("")
-    }
-
-    private fun hideKeyboard(editText: EditText) {
-        imm = editText.context
-            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
 

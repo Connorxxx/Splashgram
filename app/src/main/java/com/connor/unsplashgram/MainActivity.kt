@@ -1,28 +1,20 @@
 package com.connor.unsplashgram
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import coil.load
-import com.connor.unsplashgram.logic.model.UnsplashPhoto
 import com.connor.unsplashgram.logic.tools.Tools
 import com.connor.unsplashgram.ui.LoadAdapter
 import com.connor.unsplashgram.ui.MainViewModel
-import com.drake.brv.utils.linear
-import com.drake.brv.utils.models
-import com.drake.brv.utils.page
-import com.drake.brv.utils.setup
-import com.google.android.material.snackbar.Snackbar
+import com.connor.unsplashgram.ui.SearchActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -38,14 +30,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //window.statusBarColor = getColor(R.color.colorStatusDark)
-        setSupportActionBar(toolbar)
-        toolbar.title = ""
+        setSupportActionBar(toolbarSearch)
+        toolbarSearch.title = ""
         initRecyclerView()
         initViewModel()
-
-        imgClear.setOnClickListener {
-            cardSearch.visibility = View.GONE
-        }
     }
 
     private fun initRecyclerView() {
@@ -100,20 +88,15 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
             R.id.search -> {
-                cardSearch.visibility = View.VISIBLE
-                edSearch.apply {
-                    viewModel.searchByUrl(this)
-                }
-                viewModel.actionDone(edSearch, cardSearch)
+                val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
+//                cardSearch.visibility = View.VISIBLE
+//                edSearch.apply {
+//                    viewModel.searchByUrl(this)
+//                }
+//                viewModel.actionDone(edSearch, cardSearch)
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onBackPressed() {
-        if (cardSearch.visibility == View.VISIBLE || swipeRefreshLayout.isRefreshing) {
-            cardSearch.visibility = View.GONE
-            swipeRefreshLayout.isRefreshing = false
-        } else super.onBackPressed()
     }
 }
