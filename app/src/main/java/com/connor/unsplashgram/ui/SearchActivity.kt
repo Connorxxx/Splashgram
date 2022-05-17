@@ -13,13 +13,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.connor.unsplashgram.R
+import com.connor.unsplashgram.common.BaseActivity
 import com.connor.unsplashgram.logic.model.UnsplashPhoto
 import com.connor.unsplashgram.logic.tools.Tools
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.toolbarSearch
 import kotlinx.android.synthetic.main.activity_search.*
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : BaseActivity() {
 
     private val viewModel by lazy {
         ViewModelProvider(this).get(SearchViewModel::class.java)
@@ -31,11 +32,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        setSupportActionBar(toolbarSearch)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
-        }
+        setActionBarAndHome(toolbarSearch)
         Handler(Looper.getMainLooper()).postDelayed({
             viewModel.searchByUrl(etSearch)
         }, 300)
@@ -85,12 +82,5 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         recyclerview2.adapter = adapter
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> onBackPressed()
-        }
-        return super.onOptionsItemSelected(item)
     }
 }
