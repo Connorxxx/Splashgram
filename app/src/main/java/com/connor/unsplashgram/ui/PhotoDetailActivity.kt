@@ -1,38 +1,52 @@
 package com.connor.unsplashgram.ui
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
 import androidx.databinding.DataBindingUtil
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.connor.unsplashgram.App
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.common.BaseActivity
+import com.connor.unsplashgram.converter.GsonConverter
+import com.connor.unsplashgram.converter.SerializationConverter
 import com.connor.unsplashgram.databinding.ActivityPhotoDetailBinding
+import com.connor.unsplashgram.logic.Repository
+import com.connor.unsplashgram.logic.model.HomeBannerModel
+import com.connor.unsplashgram.logic.model.UnsplashPhoto
 import com.connor.unsplashgram.logic.tools.Tools
 import com.drake.net.Get
 import com.drake.net.component.Progress
 import com.drake.net.interfaces.ProgressListener
 import com.drake.net.scope.NetCoroutineScope
 import com.drake.net.utils.scopeNetLife
-import com.permissionx.guolindev.PermissionX
-import kotlinx.android.synthetic.main.activity_photo_detail.*
 import java.io.File
-import java.util.*
 
 class PhotoDetailActivity : BaseActivity() {
 
     private val TAG = "PhotoDetailActivity"
 
-    private lateinit var downloadScope: NetCoroutineScope
+    lateinit var downloadScope: NetCoroutineScope
+    lateinit var manager: NotificationManager
+    lateinit var fileName: String
+    lateinit var toolbarDetail: Toolbar
+    lateinit var imgPhotoDetail: ImageView
+    lateinit var tvName: TextView
+    lateinit var imgUserProfile: ImageView
+    lateinit var imgOpenHtml: ImageView
+    lateinit var imgShare: ImageView
+    lateinit var imgDownload: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -42,38 +56,61 @@ class PhotoDetailActivity : BaseActivity() {
         val userProfile = getIntentString("user_profile")
         val downloadUrl = getIntentString("download_url")
         val id = getIntentString("id")
-        
-        val fileName = "$userName-$id.jpg"
+        val html = getIntentString("html")!!
 
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        fileName = "$userName-$id.jpg"
+        val photoPath = "photos/random/?client_id=${App.ACCESS_KEY}"
+
+        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         super.onCreate(savedInstanceState)
         val binding: ActivityPhotoDetailBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_photo_detail)
+        toolbarDetail = binding.toolbarDetail
+        imgPhotoDetail = binding.imgPhotoDetail
+        tvName = binding.tvName
+        imgUserProfile = binding.imgUserProfile
+        imgOpenHtml = binding.imgOpenHtml
+        imgShare = binding.imgShare
+        imgDownload = binding.imgDownload
 
         setActionBarAndHome(toolbarDetail)
 
         window.statusBarColor = getColor(R.color.transparent) //colorStatusDark
 
-        binding.imgPhotoDetail.load(imgSource)
-        binding.tvName.text = userName
-        binding.imgUserProfile.load(userProfile) {
+            scopeNetLife {
+                val data = Get<List<UnsplashPhoto>>(photoPath) {
+                    converter = GsonConverter() // 单例转换器, 此时会忽略全局转换器, 在Net中可以直接解析List等嵌套泛型数据
+                }.await()
+                Log.d(TAG, "onCreate: $photoPath scopeNetLife $data")
+            }
+
+        imgPhotoDetail.load(imgSource)
+        tvName.text = userName
+        imgUserProfile.load(userProfile) {
             transformations(CircleCropTransformation())
         }
-        binding.imgPhotoDetail.setOnClickListener {
+        imgPhotoDetail.setOnClickListener {
             val intent = Intent(this, PhotoViewActivity::class.java).apply {
                 putExtra("image_regular", imgSource)
                 putExtra("image_full", imgFull)
             }
             startActivity(intent)
         }
-        val path =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + "/Splashgram"
+        imgOpenHtml.setOnClickListener {
+            Tools.openLink(html, this, imgOpenHtml)
+        }
+        imgShare.setOnClickListener {
+            Tools.shareLink(html, this, imgShare)
+        }
+        val path = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES
+        ).absolutePath + "/Splashgram"
         val file = File(path)
         if (!file.exists()) file.mkdir()
-        //this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
-        binding.imgDownload.setOnClickListener {
+        imgDownload.setOnClickListener {
             Log.d(TAG, "onCreate: $fileName")
             downloadScope = scopeNetLife {
                 val file = Get<File>(downloadUrl!!) {
@@ -81,38 +118,49 @@ class PhotoDetailActivity : BaseActivity() {
                     setDownloadDir(path)
                     addDownloadListener(object : ProgressListener() {
                         override fun onProgress(p: Progress) {
-                            val channel = NotificationChannel("download", "Download", NotificationManager.IMPORTANCE_DEFAULT)
+                            val channel = NotificationChannel(
+                                "download",
+                                "Download",
+                                NotificationManager.IMPORTANCE_LOW
+                            )
                             manager.createNotificationChannel(channel)
-                            val notification = NotificationCompat.Builder(this@PhotoDetailActivity, "test")
-                                .setContentTitle("Photo size ${p.totalSize()}")
-                                .setProgress(100, p.progress(), false)
-                                .setSmallIcon(R.drawable.ic_download_border_24dp)
-                                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_download_border_24dp))
-                                .build()
+                            val notification =
+                                NotificationCompat.Builder(
+                                    this@PhotoDetailActivity, "download"
+                                )
+                                    .setContentTitle("Photo size ${p.totalSize()}")
+                                    .setProgress(100, p.progress(), false)
+                                    .setOngoing(true)
+                                    .setSmallIcon(R.drawable.ic_baseline_get_app_24)
+                                    .build()
                             manager.notify(1, notification)
                         }
 
                     })
                     Log.d(TAG, "onCreate: download")
                 }.await()
-                //Tools.showSnackBar(binding.imgDownload, "Done")
                 manager.cancel(1)
-                val channel = NotificationChannel("done", "Done", NotificationManager.IMPORTANCE_DEFAULT)
-                manager.createNotificationChannel(channel)
-                val notification = NotificationCompat.Builder(this@PhotoDetailActivity, "test")
+                //Tools.showSnackBar(imgDownload, "done")
+                val channel2 =
+                    NotificationChannel(
+                        "done", "Done", NotificationManager.IMPORTANCE_HIGH
+                    )
+                manager.createNotificationChannel(channel2)
+                val notification = NotificationCompat.Builder(
+                    this@PhotoDetailActivity, "done"
+                )
                     .setContentTitle(fileName)
                     .setContentText("Download Complete")
-                    .setSmallIcon(R.drawable.ic_download_border_24dp)
-                    .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_download_border_24dp))
+                    .setSmallIcon(R.drawable.ic_baseline_file_download_done_24)
                     .build()
                 manager.notify(2, notification)
-            }
                 Log.d(TAG, "onCreate: download done")
+
             }
         }
     }
+}
 
+//if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
-        //if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-         //   String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myNewFolder";
+//   String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myNewFolder";

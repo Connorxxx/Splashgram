@@ -1,10 +1,14 @@
 package com.connor.unsplashgram.logic.model
 
+import kotlinx.serialization.Serializable
+
+
 data class SearchResponse(
     val total: Int,
     val total_pages: Int,
     val results: List<UnsplashPhoto>
 )
+
 
 data class UnsplashPhoto(
     val id: String,
@@ -18,6 +22,7 @@ data class UnsplashPhoto(
     val links: UnsplashLinks,
     val user: UnsplashUser
 )
+
 
 data class UnsplashUrls(
     val thumb: String?,
@@ -51,6 +56,19 @@ data class UnsplashUser(
     val total_collection: Int,
     val profile_image: UnsplashUrls,
     val links: UnsplashLinks
+)
+
+data class UnsplashExif(
+    val model: String?,
+    val exposure_time: String?,
+    val aperture: String?,
+    val focal_length: String?,
+    val iso: Int?
+)
+
+data class UnsplashLocation(
+    val city: String?,
+    val country: String?
 )
 
 

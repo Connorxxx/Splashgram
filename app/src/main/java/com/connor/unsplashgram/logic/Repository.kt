@@ -5,6 +5,7 @@ import android.widget.Toast
 import kotlin.coroutines.CoroutineContext
 import androidx.lifecycle.liveData
 import com.connor.unsplashgram.App
+import com.connor.unsplashgram.logic.model.UnsplashPhoto
 import com.connor.unsplashgram.logic.network.UnsplashNetwork
 import kotlinx.coroutines.Dispatchers
 

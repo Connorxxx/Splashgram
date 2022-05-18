@@ -1,8 +1,11 @@
 package com.connor.unsplashgram.logic.tools
 
+import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.widget.ImageView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 import coil.load
 import com.google.android.material.snackbar.Snackbar
 
@@ -28,6 +31,31 @@ object Tools {
                     errorRes?.let { error(errorRes) }
                 }
             })
+        }
+    }
+
+    fun openLink(link: String, context: Context, view: View) {
+        val sourceUri = link.toUri()
+        if (sourceUri.toString().startsWith("http")) {
+            val openURI = sourceUri.toString()
+            val builder = CustomTabsIntent.Builder()
+            val customTabsIntent = builder.build()
+            customTabsIntent.launchUrl(context, openURI.toUri())
+        } else {
+            Snackbar.make(view, "this $link is not a URL", Snackbar.LENGTH_LONG).show()
+        }
+    }
+
+    fun shareLink(source: String, context: Context, view: View) {
+        if (source.startsWith("http")) {
+            val sharedIntent = Intent.createChooser(Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, source)
+                type = "text/*"
+            }, null)
+            context.startActivity(sharedIntent)
+        } else {
+            Snackbar.make(view, "this $source is not a URL", Snackbar.LENGTH_LONG).show()
         }
     }
 }

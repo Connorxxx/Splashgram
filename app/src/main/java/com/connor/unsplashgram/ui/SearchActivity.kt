@@ -1,24 +1,24 @@
 package com.connor.unsplashgram.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.addTextChangedListener
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.common.BaseActivity
-import com.connor.unsplashgram.logic.model.UnsplashPhoto
+import com.connor.unsplashgram.databinding.ActivitySearchBinding
 import com.connor.unsplashgram.logic.tools.Tools
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.toolbarSearch
-import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : BaseActivity() {
 
@@ -28,16 +28,33 @@ class SearchActivity : BaseActivity() {
 
     lateinit var adapter: LoadAdapter
 
+    lateinit var etSearch: EditText
+    lateinit var srlSearch: SwipeRefreshLayout
+    lateinit var rvSearch: RecyclerView
+    lateinit var imgClean: ImageView
+    lateinit var toolbarSearch: Toolbar
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        val binding: ActivitySearchBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_search)
+        etSearch = binding.etSearch
+        srlSearch = binding.srlSearch
+        rvSearch = binding.rvSearch
+        imgClean = binding.imgClean
+        toolbarSearch = binding.toolbarSearch
+
         setActionBarAndHome(toolbarSearch)
+
+
+
+
         Handler(Looper.getMainLooper()).postDelayed({
             viewModel.searchByUrl(etSearch)
         }, 300)
         viewModel.actionDone(etSearch)
-        swipeRefreshLayout2.isEnabled = false
+        srlSearch.isEnabled = false
         initRecyclerView()
         etSearch.addTextChangedListener {
             val content = it.toString()
@@ -54,9 +71,9 @@ class SearchActivity : BaseActivity() {
                 viewModel.searchList.clear()
                 viewModel.searchList.addAll(result.results)
                 adapter.notifyDataSetChanged()
-                recyclerview2.scrollToPosition(0)
+                rvSearch.smoothScrollToPosition(0)
             } else {
-                Tools.showSnackBar(recyclerview2, "No photos here, Please check...")
+                Tools.showSnackBar(rvSearch, "No photos here, Please check...")
             }
         })
         viewModel.loadPageLiveData.observe(this, Observer {
@@ -66,7 +83,7 @@ class SearchActivity : BaseActivity() {
                 viewModel.searchList.addAll(result.results)
                 adapter.notifyDataSetChanged()
             } else {
-               // Tools.showSnackBar(recyclerview2, "null")
+               // Tools.showSnackBar(rvSearch, "null")
             }
         })
 
@@ -74,13 +91,13 @@ class SearchActivity : BaseActivity() {
 
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
-        recyclerview2.layoutManager = layoutManager
+        rvSearch.layoutManager = layoutManager
         adapter = LoadAdapter(this, viewModel.searchList).apply {
             preloadItemCount = 4
             onPreload = {
                 viewModel.loadPage(++viewModel.page)
             }
         }
-        recyclerview2.adapter = adapter
+        rvSearch.adapter = adapter
     }
 }

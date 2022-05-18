@@ -21,6 +21,8 @@ import java.lang.Integer.max
 class LoadAdapter(private val ctx: Context, private val photosList: List<UnsplashPhoto>) :
     RecyclerView.Adapter<LoadAdapter.ViewHolder>() {
 
+    lateinit var userName: String
+
     // 预加载回调
     var onPreload: (() -> Unit)? = null
 
@@ -56,6 +58,7 @@ class LoadAdapter(private val ctx: Context, private val photosList: List<Unsplas
             val userProfile = holder.getBinding().photo?.user?.profile_image?.large
             val downloadUrl = holder.getBinding().photo?.urls?.raw
             val id = holder.getBinding().photo?.id
+            val html = holder.getBinding().photo?.links?.html
 
             val intent = Intent(ctx, PhotoDetailActivity::class.java).apply {
                 putExtra("image_regular", imgSource)
@@ -64,6 +67,7 @@ class LoadAdapter(private val ctx: Context, private val photosList: List<Unsplas
                 putExtra("user_profile", userProfile)
                 putExtra("download_url", downloadUrl)
                 putExtra("id", id)
+                putExtra("html", html)
             }
             ctx.startActivity(intent)
         }

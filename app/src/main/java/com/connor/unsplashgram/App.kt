@@ -3,6 +3,7 @@ package com.connor.unsplashgram
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.drake.net.NetConfig
 
 class App : Application() {
 
@@ -17,6 +18,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        NetConfig.initialize("https://api.unsplash.com/", this)
         context = applicationContext
     }
 }

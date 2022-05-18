@@ -5,20 +5,28 @@ import android.os.Bundle
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.databinding.DataBindingUtil
 import coil.load
+import com.alexvasilkov.gestures.views.GestureImageView
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.common.BaseActivity
+import com.connor.unsplashgram.databinding.ActivityPhotoViewBinding
 import com.connor.unsplashgram.logic.tools.Tools.loadWithQuality
-import kotlinx.android.synthetic.main.activity_photo_view.*
 
 class PhotoViewActivity : BaseActivity() {
+
+    lateinit var imgViewer: GestureImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val imgSource = getIntentString("image_regular")
         val imgFull = getIntentString("image_full")
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_photo_view)
+            //setContentView(R.layout.activity_photo_view)
+        val binding: ActivityPhotoViewBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_photo_view)
+        imgViewer = binding.imgViewer
 
         hideSystemUI()
         imgViewer.controller.settings.doubleTapZoom = 1f

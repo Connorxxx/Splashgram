@@ -5,16 +5,19 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.connor.unsplashgram.databinding.ActivityMainBinding
 import com.connor.unsplashgram.logic.tools.Tools
 import com.connor.unsplashgram.ui.LoadAdapter
 import com.connor.unsplashgram.ui.MainViewModel
 import com.connor.unsplashgram.ui.SearchActivity
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
@@ -25,31 +28,48 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: LoadAdapter
 
+    lateinit var toolbarMain: Toolbar
+    lateinit var rvMain: RecyclerView
+    lateinit var swipeRefresh: SwipeRefreshLayout
+
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        //window.statusBarColor = getColor(R.color.colorStatusDark)
-        setSupportActionBar(toolbarSearch)
-        toolbarSearch.title = ""
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
+        toolbarMain = binding.toolbarMain
+        rvMain = binding.rvMain
+        swipeRefresh = binding.swipeRefresh
+
+        setSupportActionBar(toolbarMain)
         initRecyclerView()
         initViewModel()
+
+        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener(){
+            override fun onDoubleTap(e: MotionEvent?): Boolean {
+                rvMain.smoothScrollToPosition(0)
+                return super.onDoubleTap(e)
+            }
+        })
+        toolbarMain.setOnTouchListener { _, p1 -> gestureDetector.onTouchEvent(p1) }
     }
 
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
-        recyclerview.layoutManager = layoutManager
+        rvMain.layoutManager = layoutManager
         adapter = LoadAdapter(this, viewModel.loadList).apply {
             preloadItemCount = 4
             onPreload = {
                 viewModel.loadPage(++viewModel.page)
             }
         }
-        recyclerview.adapter = adapter
+        rvMain.adapter = adapter
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initViewModel() {
-        srlViewer.setOnRefreshListener {
+        swipeRefresh.setOnRefreshListener {
             viewModel.loadPhotos(App.ACCESS_KEY)
         }
         viewModel.loadPhotos(App.ACCESS_KEY)
@@ -59,10 +79,10 @@ class MainActivity : AppCompatActivity() {
                 viewModel.loadList.clear()
                 viewModel.loadList.addAll(load)
                 adapter.notifyDataSetChanged()
-                srlViewer.isRefreshing = false
+                swipeRefresh.isRefreshing = false
             } else {
-                srlViewer.isRefreshing = false
-                Tools.showSnackBar(recyclerview, "NetWork ERROR")
+                swipeRefresh.isRefreshing = false
+                Tools.showSnackBar(rvMain, "NetWork ERROR")
                 Log.d(App.TAG, "onCreate: ${it.isFailure}")
                 it.exceptionOrNull()?.printStackTrace()
             }
@@ -74,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.loadList.addAll(load)
                 adapter.notifyDataSetChanged()
             } else {
-                Tools.showSnackBar(recyclerview, "NetWork ERROR")
+                Tools.showSnackBar(rvMain, "NetWork ERROR")
             }
         })
     }
