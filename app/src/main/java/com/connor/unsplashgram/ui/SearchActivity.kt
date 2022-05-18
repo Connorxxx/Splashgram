@@ -27,7 +27,6 @@ class SearchActivity : BaseActivity() {
     }
 
     lateinit var adapter: LoadAdapter
-
     lateinit var etSearch: EditText
     lateinit var srlSearch: SwipeRefreshLayout
     lateinit var rvSearch: RecyclerView
@@ -46,9 +45,6 @@ class SearchActivity : BaseActivity() {
         toolbarSearch = binding.toolbarSearch
 
         setActionBarAndHome(toolbarSearch)
-
-
-
 
         Handler(Looper.getMainLooper()).postDelayed({
             viewModel.searchByUrl(etSearch)

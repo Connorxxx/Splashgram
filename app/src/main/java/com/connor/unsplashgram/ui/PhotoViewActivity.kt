@@ -23,7 +23,6 @@ class PhotoViewActivity : BaseActivity() {
         val imgFull = getIntentString("image_full")
 
         super.onCreate(savedInstanceState)
-            //setContentView(R.layout.activity_photo_view)
         val binding: ActivityPhotoViewBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_photo_view)
         imgViewer = binding.imgViewer

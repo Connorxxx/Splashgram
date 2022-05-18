@@ -58,11 +58,7 @@ class PhotoDetailActivity : BaseActivity() {
         val id = getIntentString("id")
         val html = getIntentString("html")!!
 
-
         fileName = "$userName-$id.jpg"
-        val photoPath = "photos/random/?client_id=${App.ACCESS_KEY}"
-
-        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         super.onCreate(savedInstanceState)
         val binding: ActivityPhotoDetailBinding =
@@ -76,15 +72,9 @@ class PhotoDetailActivity : BaseActivity() {
         imgDownload = binding.imgDownload
 
         setActionBarAndHome(toolbarDetail)
-
         window.statusBarColor = getColor(R.color.transparent) //colorStatusDark
 
-            scopeNetLife {
-                val data = Get<List<UnsplashPhoto>>(photoPath) {
-                    converter = GsonConverter() // 单例转换器, 此时会忽略全局转换器, 在Net中可以直接解析List等嵌套泛型数据
-                }.await()
-                Log.d(TAG, "onCreate: $photoPath scopeNetLife $data")
-            }
+        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         imgPhotoDetail.load(imgSource)
         tvName.text = userName
@@ -140,7 +130,6 @@ class PhotoDetailActivity : BaseActivity() {
                     Log.d(TAG, "onCreate: download")
                 }.await()
                 manager.cancel(1)
-                //Tools.showSnackBar(imgDownload, "done")
                 val channel2 =
                     NotificationChannel(
                         "done", "Done", NotificationManager.IMPORTANCE_HIGH

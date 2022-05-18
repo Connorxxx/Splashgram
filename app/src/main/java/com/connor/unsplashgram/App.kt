@@ -18,7 +18,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        NetConfig.initialize("https://api.unsplash.com/", this)
         context = applicationContext
     }
 }
