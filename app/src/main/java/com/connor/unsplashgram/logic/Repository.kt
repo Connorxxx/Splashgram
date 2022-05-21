@@ -16,7 +16,7 @@ object Repository {
         val photosResponse = UnsplashNetwork.loadPhotos(clientId, page, pageSize)
         if (photosResponse[1].id.isNotEmpty()) {
             val photos = photosResponse
-            Log.d(App.TAG, "Repository: loadPhotos: $photos")
+            //Log.d(App.TAG, "Repository: loadPhotos: $photos")
             Result.success(photos)
         } else {
             Log.d(App.TAG, "Repository: loadPhotos: $photosResponse")
@@ -34,6 +34,45 @@ object Repository {
         } else {
             Log.d(App.TAG, "Repository: searchPhotos: $searchResponse")
             Result.failure(java.lang.RuntimeException("response status is $searchResponse"))
+        }
+    }
+
+    fun getPhoto(id: String, clientId: String) = fire(Dispatchers.IO) {
+        Log.d(App.TAG, "getPhotos: begin")
+        val getResponse = UnsplashNetwork.getPhoto(id, clientId)
+        if (getResponse.id.isNotEmpty()) {
+            val photo = getResponse
+            Log.d(App.TAG, "Repository: getPhoto: $photo")
+            Result.success(photo)
+        } else {
+            Log.d(App.TAG, "Repository: getResponse: $getResponse")
+            Result.failure(java.lang.RuntimeException("response status is $getResponse"))
+        }
+    }
+
+    fun getUserProfile(username: String, clientId: String) = fire(Dispatchers.IO) {
+        Log.d(App.TAG, "getUserProfile: begin")
+        val userProfileResponse = UnsplashNetwork.getUserProfile(username, clientId)
+        if (userProfileResponse.id.isNotEmpty()) {
+            val userProfile = userProfileResponse
+            Log.d(App.TAG, "Repository: getUserProfile: $userProfile")
+            Result.success(userProfile)
+        } else {
+            Log.d(App.TAG, "Repository: getUserProfile: $userProfileResponse")
+            Result.failure(java.lang.RuntimeException("response status is $userProfileResponse"))
+        }
+    }
+
+    fun getUserPhotos(username: String, clientId: String, page: Int, pageSize: Int) = fire(Dispatchers.IO) {
+        Log.d(App.TAG, "getUserPhotos: begin")
+        val userPhotosResponse = UnsplashNetwork.getUserPhotos(username, clientId, page, pageSize)
+        if (userPhotosResponse.isNotEmpty()) {
+            val userPhotos = userPhotosResponse
+            Log.d(App.TAG, "Repository: getUserPhotos: $userPhotos")
+            Result.success(userPhotos)
+        } else {
+            Log.d(App.TAG, "Repository: getUserPhotos: $userPhotosResponse")
+            Result.failure(java.lang.RuntimeException("response status is $userPhotosResponse"))
         }
     }
 

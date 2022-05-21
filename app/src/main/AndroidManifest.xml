@@ -14,7 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Unsplashgram"
         android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
-
+        <activity
+            android:name=".ui.UserActivity"
+            android:launchMode="singleTask"
+            android:exported="false"/>
         <activity
             android:name=".common.BaseActivity"
             android:exported="false" />

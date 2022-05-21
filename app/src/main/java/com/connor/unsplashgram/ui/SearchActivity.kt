@@ -18,7 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.common.BaseActivity
 import com.connor.unsplashgram.databinding.ActivitySearchBinding
-import com.connor.unsplashgram.logic.tools.Tools
+import com.connor.unsplashgram.logic.tools.Tools.showSnackBar
 
 class SearchActivity : BaseActivity() {
 
@@ -69,7 +69,7 @@ class SearchActivity : BaseActivity() {
                 adapter.notifyDataSetChanged()
                 rvSearch.smoothScrollToPosition(0)
             } else {
-                Tools.showSnackBar(rvSearch, "No photos here, Please check...")
+                showSnackBar(rvSearch, "No photos here, Please check...")
             }
         })
         viewModel.loadPageLiveData.observe(this, Observer {
@@ -79,7 +79,7 @@ class SearchActivity : BaseActivity() {
                 viewModel.searchList.addAll(result.results)
                 adapter.notifyDataSetChanged()
             } else {
-               // Tools.showSnackBar(rvSearch, "null")
+               // showSnackBar(rvSearch, "null")
             }
         })
 

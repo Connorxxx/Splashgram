@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -13,13 +16,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.connor.unsplashgram.common.BaseActivity
 import com.connor.unsplashgram.databinding.ActivityMainBinding
-import com.connor.unsplashgram.logic.tools.Tools
+import com.connor.unsplashgram.logic.tools.Tools.showSnackBar
 import com.connor.unsplashgram.ui.LoadAdapter
 import com.connor.unsplashgram.ui.MainViewModel
 import com.connor.unsplashgram.ui.SearchActivity
+import com.kongqw.network.monitor.NetworkMonitorManager
+import com.kongqw.network.monitor.enums.NetworkState
+import com.kongqw.network.monitor.interfaces.NetworkMonitor
+import com.kongqw.network.monitor.util.NetworkStateUtils
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private val TAG = "MainActivity"
 
     private val viewModel by lazy {
@@ -32,8 +40,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var rvMain: RecyclerView
     lateinit var swipeRefresh: SwipeRefreshLayout
 
-
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding =
@@ -41,20 +47,22 @@ class MainActivity : AppCompatActivity() {
         toolbarMain = binding.toolbarMain
         rvMain = binding.rvMain
         swipeRefresh = binding.swipeRefresh
+        NetworkMonitorManager.getInstance().register(this)
 
         setSupportActionBar(toolbarMain)
         initRecyclerView()
         initViewModel()
 
-        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener(){
-            override fun onDoubleTap(e: MotionEvent?): Boolean {
-                rvMain.smoothScrollToPosition(0)
-                return super.onDoubleTap(e)
-            }
-        })
-        toolbarMain.setOnTouchListener { _, p1 -> gestureDetector.onTouchEvent(p1) }
+        doubleToTop(toolbarMain, rvMain)
+
+        val networkState: NetworkState = NetworkStateUtils.getNetworkState(applicationContext)
+        onNetWorkStateChange(networkState)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        NetworkMonitorManager.getInstance().unregister(this)
+    }
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
         rvMain.layoutManager = layoutManager
@@ -70,31 +78,21 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun initViewModel() {
         swipeRefresh.setOnRefreshListener {
-            viewModel.loadPhotos(App.ACCESS_KEY)
+            viewModel.loadList.clear()
+            viewModel.loadPage(1)
         }
-        viewModel.loadPhotos(App.ACCESS_KEY)
-        viewModel.loadLiveData.observe(this, Observer {
-            val load = it.getOrNull()
-            if (load != null) {
-                viewModel.loadList.clear()
-                viewModel.loadList.addAll(load)
-                adapter.notifyDataSetChanged()
-                swipeRefresh.isRefreshing = false
-            } else {
-                swipeRefresh.isRefreshing = false
-                Tools.showSnackBar(rvMain, "NetWork ERROR")
-                Log.d(App.TAG, "onCreate: ${it.isFailure}")
-                it.exceptionOrNull()?.printStackTrace()
-            }
-        })
+        viewModel.loadPage(viewModel.page)
         viewModel.loadPageLiveData.observe(this, Observer {
             val load = it.getOrNull()
             if (load != null) {
                 //viewModel.loadList.clear()
                 viewModel.loadList.addAll(load)
                 adapter.notifyDataSetChanged()
+                swipeRefresh.isRefreshing = false
             } else {
-                Tools.showSnackBar(rvMain, "NetWork ERROR")
+                //showSnackBar(rvMain, "Something went wrong...")
+
+//                    swipeRefresh.isRefreshing = true
             }
         })
     }
@@ -117,5 +115,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    @NetworkMonitor
+    fun onNetWorkStateChange(networkState: NetworkState) {
+        when (networkState) {
+            NetworkState.NONE -> {
+                //showSnackBar(rvMain, "No network connection")
+            }
+            NetworkState.WIFI -> {
+                viewModel.loadPage(viewModel.page)
+            }
+            NetworkState.CELLULAR -> {
+                viewModel.loadPage(viewModel.page)
+            }
+        }
     }
 }

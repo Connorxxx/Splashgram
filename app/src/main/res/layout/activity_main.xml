@@ -30,7 +30,7 @@
                     android:id="@+id/toolbarMain"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+                    android:theme="@style/AppToolbar"
                     app:layout_collapseMode="pin"
                     app:title=" "
                     app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar">
@@ -47,6 +47,7 @@
                 </androidx.appcompat.widget.Toolbar>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
+
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -59,8 +60,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMain"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible">
+                android:layout_height="match_parent">
 
             </androidx.recyclerview.widget.RecyclerView>
 

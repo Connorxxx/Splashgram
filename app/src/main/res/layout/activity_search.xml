@@ -31,7 +31,8 @@
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbarSearch"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize">
+                    android:layout_height="?attr/actionBarSize"
+                    android:theme="@style/AppToolbar">
 
 
                     <EditText

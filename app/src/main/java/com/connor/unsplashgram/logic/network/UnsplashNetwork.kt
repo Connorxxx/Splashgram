@@ -20,6 +20,15 @@ object UnsplashNetwork {
     suspend fun searchPhotos(clientId: String, criteria: String, page: Int, pageSize: Int) =
         UnsplashService.searchPhotos(clientId, criteria, page, pageSize).await()
 
+    suspend fun getPhoto(id: String, clientId: String) =
+        UnsplashService.getPhoto(id, clientId).await()
+
+    suspend fun getUserProfile(username: String, clientId: String) =
+        UnsplashService.getUserProfile(username, clientId).await()
+
+    suspend fun getUserPhotos(username: String, clientId: String, page: Int, pageSize: Int) =
+        UnsplashService.getUserPhotos(username, clientId, page, pageSize).await()
+
 
     private suspend fun <T> Call<T>.await(): T {
         return suspendCoroutine {

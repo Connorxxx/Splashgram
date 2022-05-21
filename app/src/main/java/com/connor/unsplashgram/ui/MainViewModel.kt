@@ -19,17 +19,17 @@ class MainViewModel : ViewModel() {
 
     val loadList = ArrayList<UnsplashPhoto>()
 
-    val loadLiveData = Transformations.switchMap(collectionsLiveData) {
-        Repository.loadPhotos(it, page, pageSize)
-    }
+//    val loadLiveData = Transformations.switchMap(collectionsLiveData) {
+//        Repository.loadPhotos(it, page, pageSize)
+//    }
 
     val loadPageLiveData = Transformations.switchMap(pageLiveData) {
         Repository.loadPhotos(App.ACCESS_KEY, it, pageSize)
     }
 
-    fun loadPhotos(clientId: String) {
-        collectionsLiveData.value = clientId
-    }
+//    fun loadPhotos(clientId: String) {
+//        collectionsLiveData.value = clientId
+//    }
 
     fun loadPage(page: Int) {
         pageLiveData.value = page
