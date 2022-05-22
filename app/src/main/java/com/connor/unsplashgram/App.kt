@@ -13,8 +13,8 @@ class App : Application() {
     @SuppressLint("StaticFieldLeak")
     companion object {
         const val TAG = "UnsplashGram"
-        const val ACCESS_KEY = "S02y3gYS3z7i-VnCy81gjAuyh5gMvewXxuqTPz7stfs"
-        const val SECRET_KEY = "5hkDLR2dRkC6JPzrRPnsYjCqgYzSb6nMSWHDQqPL488"
+        const val ACCESS_KEY = "Input your own key"
+        const val SECRET_KEY = ""
 
         lateinit var context: Context
     }

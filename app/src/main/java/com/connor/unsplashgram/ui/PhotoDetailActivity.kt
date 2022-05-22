@@ -37,6 +37,7 @@ import com.drake.net.component.Progress
 import com.drake.net.interfaces.ProgressListener
 import com.drake.net.scope.NetCoroutineScope
 import com.drake.net.utils.scopeNetLife
+import com.google.android.material.appbar.AppBarLayout
 import java.io.File
 
 class PhotoDetailActivity : BaseActivity() {
@@ -84,6 +85,16 @@ class PhotoDetailActivity : BaseActivity() {
         ).absolutePath + "/Splashgram"
         val file = File(path)
         if (!file.exists()) file.mkdir()
+
+//        binding.appbar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+//            val test = verticalOffset + binding.toolBarLayou.height - binding.toolbarDetail.height
+//            Log.d(App.TAG, "onScrollChange: $verticalOffset  $test  ${binding.toolbarDetail.height}")
+//            if (binding.toolbarDetail.height > test) {
+//                binding.toolbarDetail.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+//            } else {
+//                binding.toolbarDetail.setNavigationIcon(R.drawable.ic_detail_back)
+//            }
+//        })
 
         Log.d(TAG, "onCreate: ")
 
@@ -161,7 +172,10 @@ class PhotoDetailActivity : BaseActivity() {
                     }
                 }
             } else {
-                viewModel.getPhotos(id)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    viewModel.getPhotos(id)
+                }, 10000)
+
                 showSnackBar(imgPhotoDetail, "Get details failure, Retry...")
             }
         }

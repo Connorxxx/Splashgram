@@ -33,7 +33,7 @@ class SearchActivity : BaseActivity() {
     lateinit var imgClean: ImageView
     lateinit var toolbarSearch: Toolbar
 
-    @SuppressLint("NotifyDataSetChanged")
+    //@SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivitySearchBinding =
@@ -66,7 +66,7 @@ class SearchActivity : BaseActivity() {
             if (result != null) {
                 viewModel.searchList.clear()
                 viewModel.searchList.addAll(result.results)
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(result.results.lastIndex)
                 rvSearch.smoothScrollToPosition(0)
             } else {
                 showSnackBar(rvSearch, "No photos here, Please check...")
@@ -77,7 +77,7 @@ class SearchActivity : BaseActivity() {
             if (result != null) {
                 //viewModel.loadList.clear()
                 viewModel.searchList.addAll(result.results)
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(result.results.lastIndex)
             } else {
                // showSnackBar(rvSearch, "null")
             }

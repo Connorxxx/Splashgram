@@ -21,8 +21,11 @@ import com.connor.unsplashgram.logic.model.UnsplashPhoto
 import com.connor.unsplashgram.logic.tools.Tools
 import com.connor.unsplashgram.logic.tools.Tools.openLink
 import com.connor.unsplashgram.logic.tools.Tools.shareLink
+import com.connor.unsplashgram.logic.tools.Tools.showSnackBar
 import com.connor.unsplashgram.logic.tools.toPrettyString
 import com.drake.brv.utils.setup
+import com.google.android.material.appbar.AppBarLayout
+import okhttp3.internal.notifyAll
 
 class UserActivity : BaseActivity() {
 
@@ -33,7 +36,7 @@ class UserActivity : BaseActivity() {
     lateinit var adapter: UserPhotosAdapter
     lateinit var rvUserPhotos: RecyclerView
 
-    @SuppressLint("NotifyDataSetChanged")
+    //@SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val userName = getIntentString("text_user_name")
@@ -51,7 +54,7 @@ class UserActivity : BaseActivity() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadPage(viewModel.page)
         }
-        doubleToTop(binding.toolbarUser, rvUserPhotos)
+        doubleToTop(binding.toolbarUser, binding.rvUserPhotos, binding.nestedUserPhotos, binding.appbar)
 
         val isToolbarShown = false
         viewModel.getUserProfile(username)
@@ -79,26 +82,10 @@ class UserActivity : BaseActivity() {
                     imgUserShare.setOnClickListener { img ->
                         shareLink(user.links!!.html, this@UserActivity, img)
                     }
-                    toolbarUser.title = userName
-                    toolbarUser.subtitle = getString(
-                        R.string.total_photos, user.total_photos?.toPrettyString()
-                    )
-                    swipeRefresh.isRefreshing = false
-//                    swipeRefresh.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-//
-//                        // User scrolled past image to height of toolbar and the title text is
-//                        // underneath the toolbar, so the toolbar should be shown.
-//                        val shouldShowToolbar = scrollY > binding.toolbarUser.height
-//
-//
-//                        Log.d(
-//                            App.TAG,
-//                            "isToolbarShown: $isToolbarShown  $shouldShowToolbar  $scrollY"
-//                        )
-//
-//                        // The new state of the toolbar differs from the previous state; update
-//                        // appbar and toolbar attributes.
-//                        if (isToolbarShown != shouldShowToolbar) {
+                    appbar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+                        val test = toolbarLayout.height / 2
+//                        swipeRefresh.isEnabled = verticalOffset == 0
+//                        if (verticalOffset + test < 0) {
 //                            toolbarUser.title = userName
 //                            toolbarUser.subtitle = getString(
 //                                R.string.total_photos, user.total_photos?.toPrettyString()
@@ -107,7 +94,27 @@ class UserActivity : BaseActivity() {
 //                            toolbarUser.title = " "
 //                            toolbarUser.subtitle = " "
 //                        }
-//                    }
+                        Log.d(App.TAG, "onScrollChange: $verticalOffset  $test")
+                    })
+                    nestedUserPhotos.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY -> //if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()))
+                        val test =  (v!!.getChildAt(0).getMeasuredHeight() - v!!.getMeasuredHeight())
+                        //Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")
+                        if (scrollY == test && scrollY > oldScrollY) {
+                         //   Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")
+                            viewModel.loadPage(++viewModel.page)
+                        }
+                        val shouldShowToolbar = scrollY > 0
+                        //Log.d(App.TAG, "onScrollChange: $scrollY / $shouldShowToolbar / true / ")
+                        if (shouldShowToolbar) {
+                            toolbarUser.title = userName
+                            toolbarUser.subtitle = getString(
+                                R.string.total_photos, user.total_photos?.toPrettyString()
+                            )
+                        } else {
+                            toolbarUser.title = " "
+                            toolbarUser.subtitle = " "
+                        }
+                    })
                 }
             } else {
 
@@ -120,9 +127,13 @@ class UserActivity : BaseActivity() {
             val page = it.getOrNull()
             if (page != null) {
                 viewModel.userPhotosList.addAll(page)
-                adapter.notifyDataSetChanged()
+                //adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(page.lastIndex)
+                binding.swipeRefresh.isRefreshing = false
             } else {
-                Log.d(App.TAG, "getUserPhotos: ")
+                binding.swipeRefresh.isRefreshing = false
+                binding.progressBar.visibility = View.GONE
+              //  showSnackBar(binding.userImageView, "None")
             }
         }
 
@@ -141,11 +152,12 @@ class UserActivity : BaseActivity() {
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
         rvUserPhotos.layoutManager = layoutManager
+        //rvUserPhotos.isNestedScrollingEnabled = false
         adapter = UserPhotosAdapter(this, viewModel.userPhotosList).apply {
-            preloadItemCount = 4
-            onPreload = {
-                viewModel.loadPage(++viewModel.page)
-            }
+//            preloadItemCount = 4
+//            onPreload = {
+//                viewModel.loadPage(++viewModel.page)
+//            }
         }
         rvUserPhotos.adapter = adapter
     }

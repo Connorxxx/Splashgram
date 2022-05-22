@@ -10,7 +10,7 @@ import com.connor.unsplashgram.logic.model.UnsplashPhoto
 
 class UserViewModel : ViewModel() {
 
-    var pageSize = 20
+    var pageSize = 10
     var page = 1
     var usernameText = ""
 

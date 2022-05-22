@@ -53,7 +53,7 @@ class MainActivity : BaseActivity() {
         initRecyclerView()
         initViewModel()
 
-        doubleToTop(toolbarMain, rvMain)
+        doubleToTop(toolbarMain, rvMain, null, null)
 
         val networkState: NetworkState = NetworkStateUtils.getNetworkState(applicationContext)
         onNetWorkStateChange(networkState)
@@ -75,7 +75,7 @@ class MainActivity : BaseActivity() {
         rvMain.adapter = adapter
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+   // @SuppressLint("NotifyDataSetChanged")
     private fun initViewModel() {
         swipeRefresh.setOnRefreshListener {
             viewModel.loadList.clear()
@@ -87,12 +87,12 @@ class MainActivity : BaseActivity() {
             if (load != null) {
                 //viewModel.loadList.clear()
                 viewModel.loadList.addAll(load)
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(load.lastIndex)
+               // adapter.notifyDataSetChanged()
                 swipeRefresh.isRefreshing = false
             } else {
-                //showSnackBar(rvMain, "Something went wrong...")
-
-//                    swipeRefresh.isRefreshing = true
+                showSnackBar(rvMain, "Something went wrong...")
+               // viewModel.loadPage(viewModel.page)
             }
         })
     }
