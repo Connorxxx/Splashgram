@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Unsplashgram" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.Unsplashgram" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
@@ -9,7 +9,9 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="colorControlHighlight">@color/black</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
+
 
     <style name="AlertDialogTheme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
@@ -29,6 +31,16 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/navigationBar</item>
+    </style>
+    <style name="PhotoViewsActivityTheme" parent="Theme.Unsplashgram">
+<!--        <item name="colorPrimary">@color/transparent</item>-->
+<!--        <item name="colorPrimaryDark">@color/transparent</item>-->
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:navigationBarColor">@color/transparent</item>-->
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="AppToolbar" parent="ThemeOverlay.AppCompat.ActionBar">
@@ -38,9 +50,13 @@
         <item name="android:textColorSecondary">@android:color/black</item>
     </style>
 
-    <style name="AppToolbar2" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:textColorPrimary">@android:color/black</item>
-        <item name="android:textColorSecondary">@android:color/black</item>
+    <style name="AppToolbar2" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlHighlight">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+
+
     </style>
 
     <style name="ToolbarText">

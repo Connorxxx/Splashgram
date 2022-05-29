@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.core.widget.NestedScrollView
@@ -14,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.connor.unsplashgram.App
+import com.connor.unsplashgram.App.Companion.userName
+import com.connor.unsplashgram.App.Companion.userProfile
+import com.connor.unsplashgram.App.Companion.username
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.common.BaseActivity
 import com.connor.unsplashgram.databinding.ActivityUserBinding
@@ -23,7 +28,6 @@ import com.connor.unsplashgram.logic.tools.Tools.openLink
 import com.connor.unsplashgram.logic.tools.Tools.shareLink
 import com.connor.unsplashgram.logic.tools.Tools.showSnackBar
 import com.connor.unsplashgram.logic.tools.toPrettyString
-import com.drake.brv.utils.setup
 import com.google.android.material.appbar.AppBarLayout
 import okhttp3.internal.notifyAll
 
@@ -39,9 +43,9 @@ class UserActivity : BaseActivity() {
     //@SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        val userName = getIntentString("text_user_name")
-        val userProfile = getIntentString("user_profile")
-        val username = getIntentString("username") ?: ""
+//        val userName = getIntentString("text_user_name")
+//        val userProfile = getIntentString("user_profile")
+//        val username = getIntentString("username") ?: ""
 
         super.onCreate(savedInstanceState)
         val binding: ActivityUserBinding =
@@ -52,29 +56,27 @@ class UserActivity : BaseActivity() {
 
         initRecyclerView()
         binding.swipeRefresh.setOnRefreshListener {
+            rvUserPhotos.scrollToPosition(0)
+            viewModel.userPhotosList.clear()
+            viewModel.page = 1
             viewModel.loadPage(viewModel.page)
         }
-        doubleToTop(binding.toolbarUser, binding.rvUserPhotos, binding.nestedUserPhotos, binding.appbar)
+        doubleToTop(
+            binding.toolbarUser,
+            binding.rvUserPhotos,
+            binding.nestedUserPhotos,
+            binding.appbar
+        )
 
         val isToolbarShown = false
         viewModel.getUserProfile(username)
         viewModel.getUserLiveData.observe(this) {
             val user = it.getOrNull()
             if (user != null) {
+                binding.user = user
                 binding.apply {
-                    tvUsername.text = getString(R.string.username, user.username)
-                    tvBio.text = user.bio ?: getString(R.string.default_bio, userName)
-                    tvFollowing.text = user.following_count?.toPrettyString()
-                    tvFollower.text = user.followers_count?.toPrettyString()
-                    user.location?.let {
-                        linearLocation.visibility = View.VISIBLE
-                        tvUserLocation.text = user.location
-                    }
-                    user.portfolio_url?.let {
-                        imgPortfolioUrl.visibility = View.VISIBLE
-                        imgPortfolioUrl.setOnClickListener { img ->
-                            openLink(user.portfolio_url, this@UserActivity, img)
-                        }
+                    imgPortfolioUrl.setOnClickListener { img ->
+                        openLink(user.portfolio_url!!, this@UserActivity, img)
                     }
                     imgUserHtml.setOnClickListener { img ->
                         openLink(user.links!!.html, this@UserActivity, img)
@@ -94,13 +96,13 @@ class UserActivity : BaseActivity() {
 //                            toolbarUser.title = " "
 //                            toolbarUser.subtitle = " "
 //                        }
-                        Log.d(App.TAG, "onScrollChange: $verticalOffset  $test")
+                        //  Log.d(App.TAG, "onScrollChange: $verticalOffset  $test")
                     })
                     nestedUserPhotos.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY -> //if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()))
-                        val test =  (v!!.getChildAt(0).getMeasuredHeight() - v!!.getMeasuredHeight())
+                        val test = (v!!.getChildAt(0).getMeasuredHeight() - v!!.getMeasuredHeight())
                         //Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")
                         if (scrollY == test && scrollY > oldScrollY) {
-                         //   Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")
+                            //   Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")
                             viewModel.loadPage(++viewModel.page)
                         }
                         val shouldShowToolbar = scrollY > 0
@@ -129,11 +131,15 @@ class UserActivity : BaseActivity() {
                 viewModel.userPhotosList.addAll(page)
                 //adapter.notifyDataSetChanged()
                 adapter.notifyItemChanged(page.lastIndex)
+                //Handler(Looper.getMainLooper()).postDelayed({
+                if (rvUserPhotos.visibility == View.GONE) rvUserPhotos.visibility = View.VISIBLE
+                //},312)
+
                 binding.swipeRefresh.isRefreshing = false
             } else {
                 binding.swipeRefresh.isRefreshing = false
                 binding.progressBar.visibility = View.GONE
-              //  showSnackBar(binding.userImageView, "None")
+                //  showSnackBar(binding.userImageView, "None")
             }
         }
 

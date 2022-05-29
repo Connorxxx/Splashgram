@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import coil.load
@@ -11,21 +12,24 @@ import com.google.android.material.snackbar.Snackbar
 
 object Tools {
 
-    fun showSnackBar(view: View, text: String) {
-        Snackbar.make(view, text, Snackbar.LENGTH_LONG).show()
+    fun showSnackBar(view: View, text: String): Snackbar {
+        val sbView =  Snackbar.make(view, text, Snackbar.LENGTH_LONG)
+        sbView.show()
+        return sbView
     }
 
     fun ImageView.loadWithQuality(
         highQuality: String,
         lowQuality: String,
         placeholderRes: Int? = null,
-        errorRes: Int? = null
+        errorRes: Int? = null,
+        progressBar: ProgressBar? = null
     ) {
         load(lowQuality) {
             placeholderRes?.let {
                 placeholder(placeholderRes)
             }
-            listener(onSuccess = { _, _ ->
+            listener(onSuccess = { request, result ->
                 load(highQuality) {
                     placeholder(drawable) // If there was a way to not clear existing image before loading, this would not be required
                     errorRes?.let { error(errorRes) }

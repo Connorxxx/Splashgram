@@ -6,8 +6,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
+import com.connor.unsplashgram.App.Companion.TAG
 import com.connor.unsplashgram.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
@@ -21,7 +23,7 @@ val RESPLASH_RELATIVE_PATH = "${Environment.DIRECTORY_PICTURES}${File.separator}
 val RESPLASH_LEGACY_PATH = "${Environment.getExternalStoragePublicDirectory(
     Environment.DIRECTORY_PICTURES)}${File.separator}$RESPLASH_DIRECTORY"
 
-fun Context.fileExists(fileName: String, downloader: String?): Boolean {
+fun Context.fileExists(fileName: String): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val projection = arrayOf(MediaStore.MediaColumns.DISPLAY_NAME)
         val selection = "${MediaStore.MediaColumns.RELATIVE_PATH} like ? and " +
@@ -30,8 +32,10 @@ fun Context.fileExists(fileName: String, downloader: String?): Boolean {
 
         val selectionArgs = arrayOf("%$relativePath%", fileName)
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        Log.d(TAG, "fileExists: $uri / $projection / $selection / $selectionArgs")
 
         contentResolver.query(uri, projection, selection, selectionArgs, null)?.use {
+            Log.d(TAG, "fileExists: ${it.count}")
             return it.count > 0
         } ?: return false
     } else {

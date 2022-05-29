@@ -14,11 +14,12 @@ object UnsplashNetwork {
 
     private val UnsplashService = ServiceCreator.create<UnsplashService>()
 
-    suspend fun loadPhotos(clientId: String, page: Int, pageSize: Int) =
-        UnsplashService.loadPhotos(clientId, page, pageSize).await()
+    suspend fun loadPhotos(clientId: String, page: Int, pageSize: Int, orderBy: String) =
+        UnsplashService.loadPhotos(clientId, page, pageSize, orderBy).await()
 
-    suspend fun searchPhotos(clientId: String, criteria: String, page: Int, pageSize: Int) =
-        UnsplashService.searchPhotos(clientId, criteria, page, pageSize).await()
+    suspend fun searchPhotos(
+        clientId: String, criteria: String, page: Int, pageSize: Int, orderBy: String, orientation: String?
+    ) = UnsplashService.searchPhotos(clientId, criteria, page, pageSize, orderBy, orientation).await()
 
     suspend fun getPhoto(id: String, clientId: String) =
         UnsplashService.getPhoto(id, clientId).await()

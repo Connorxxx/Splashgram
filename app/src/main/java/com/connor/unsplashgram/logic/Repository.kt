@@ -11,9 +11,9 @@ import kotlinx.coroutines.Dispatchers
 
 object Repository {
 
-    fun loadPhotos(clientId: String, page: Int, pageSize: Int) = fire(Dispatchers.IO) {
+    fun loadPhotos(clientId: String, page: Int, pageSize: Int, orderBy: String) = fire(Dispatchers.IO) {
         Log.d(App.TAG, "loadPhotos: begin")
-        val photosResponse = UnsplashNetwork.loadPhotos(clientId, page, pageSize)
+        val photosResponse = UnsplashNetwork.loadPhotos(clientId, page, pageSize, orderBy)
         if (photosResponse[1].id.isNotEmpty()) {
             val photos = photosResponse
             //Log.d(App.TAG, "Repository: loadPhotos: $photos")
@@ -24,12 +24,12 @@ object Repository {
         }
     }
 
-    fun searchPhotos(clientId: String, criteria: String, page: Int, pageSize: Int) = fire(Dispatchers.IO) {
+    fun searchPhotos(clientId: String, criteria: String, page: Int, pageSize: Int, orderBy: String, orientation: String?) = fire(Dispatchers.IO) {
         Log.d(App.TAG, "searchPhotos: begin")
-        val searchResponse = UnsplashNetwork.searchPhotos(clientId, criteria, page, pageSize)
+        val searchResponse = UnsplashNetwork.searchPhotos(clientId, criteria, page, pageSize, orderBy, orientation)
         if (searchResponse.results[1].id.isNotEmpty()) {
             val result = searchResponse
-            Log.d(App.TAG, "Repository: searchPhotos: $result")
+           // Log.d(App.TAG, "Repository: searchPhotos: $result")
             Result.success(result)
         } else {
             Log.d(App.TAG, "Repository: searchPhotos: $searchResponse")
@@ -42,7 +42,7 @@ object Repository {
         val getResponse = UnsplashNetwork.getPhoto(id, clientId)
         if (getResponse.id.isNotEmpty()) {
             val photo = getResponse
-            Log.d(App.TAG, "Repository: getPhoto: $photo")
+         //   Log.d(App.TAG, "Repository: getPhoto: $photo")
             Result.success(photo)
         } else {
             Log.d(App.TAG, "Repository: getResponse: $getResponse")
@@ -55,7 +55,7 @@ object Repository {
         val userProfileResponse = UnsplashNetwork.getUserProfile(username, clientId)
         if (userProfileResponse.id.isNotEmpty()) {
             val userProfile = userProfileResponse
-            Log.d(App.TAG, "Repository: getUserProfile: $userProfile")
+         //   Log.d(App.TAG, "Repository: getUserProfile: $userProfile")
             Result.success(userProfile)
         } else {
             Log.d(App.TAG, "Repository: getUserProfile: $userProfileResponse")
@@ -68,7 +68,7 @@ object Repository {
         val userPhotosResponse = UnsplashNetwork.getUserPhotos(username, clientId, page, pageSize)
         if (userPhotosResponse.isNotEmpty()) {
             val userPhotos = userPhotosResponse
-            Log.d(App.TAG, "Repository: getUserPhotos: $userPhotos")
+         //   Log.d(App.TAG, "Repository: getUserPhotos: $userPhotos")
             Result.success(userPhotos)
         } else {
             Log.d(App.TAG, "Repository: getUserPhotos: $userPhotosResponse")

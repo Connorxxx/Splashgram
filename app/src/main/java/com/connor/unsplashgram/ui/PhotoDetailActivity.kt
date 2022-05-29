@@ -3,19 +3,15 @@ package com.connor.unsplashgram.ui
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.*
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
@@ -23,6 +19,12 @@ import androidx.lifecycle.ViewModelProvider
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.connor.unsplashgram.App
+import com.connor.unsplashgram.App.Companion.id
+import com.connor.unsplashgram.App.Companion.imgFull
+import com.connor.unsplashgram.App.Companion.imgSource
+import com.connor.unsplashgram.App.Companion.userName
+import com.connor.unsplashgram.App.Companion.userProfile
+import com.connor.unsplashgram.App.Companion.username
 import com.connor.unsplashgram.R
 import com.connor.unsplashgram.common.BaseActivity
 import com.connor.unsplashgram.databinding.ActivityPhotoDetailBinding
@@ -37,7 +39,6 @@ import com.drake.net.component.Progress
 import com.drake.net.interfaces.ProgressListener
 import com.drake.net.scope.NetCoroutineScope
 import com.drake.net.utils.scopeNetLife
-import com.google.android.material.appbar.AppBarLayout
 import java.io.File
 
 class PhotoDetailActivity : BaseActivity() {
@@ -49,22 +50,19 @@ class PhotoDetailActivity : BaseActivity() {
     private val TAG = "PhotoDetailActivity"
 
     lateinit var downloadScope: NetCoroutineScope
-    
+
     lateinit var manager: NotificationManager
-    lateinit var fileName: String
+   // lateinit var fileName: String
     lateinit var imgPhotoDetail: ImageView
     lateinit var tvName: TextView
     lateinit var imgUserProfile: ImageView
+    lateinit var path: String
+
+    companion object {
+        var fileName = "$userName-$id.jpg"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val imgSource = getIntentString("image_regular")
-        val imgFull = getIntentString("image_full")
-        val userName = getIntentString("text_user_name")
-        val userProfile = getIntentString("user_profile")
-        val id = getIntentString("id")!!
-        val username = getIntentString("username") ?: ""
-
 
         super.onCreate(savedInstanceState)
         val binding: ActivityPhotoDetailBinding =
@@ -73,18 +71,27 @@ class PhotoDetailActivity : BaseActivity() {
         tvName = binding.tvName
         imgUserProfile = binding.imgUserProfile
 
-
         setActionBarAndHome(binding.toolbarDetail)
         window.statusBarColor = getColor(R.color.transparent) //colorStatusDark
-        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+         manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         viewModel.getPhotos(id)
 
-        val path = Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_PICTURES
-        ).absolutePath + "/Splashgram"
-        val file = File(path)
-        if (!file.exists()) file.mkdir()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            path = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES
+            ).absolutePath + "/Splashgram"
+            val file = File(path)
+            if (!file.exists()) file.mkdir()
+            Log.d(App.TAG, "testPath: $path >= Build.VERSION_CODES.R")
+        } else {
+            path = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/Splashgram"
+            val file = File(path)
+            if (!file.exists()) file.mkdir()
+            Log.d(App.TAG, "testPath: $path  !Build.VERSION_CODES.R")
+        }
+
+
 
 //        binding.appbar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
 //            val test = verticalOffset + binding.toolBarLayou.height - binding.toolbarDetail.height
@@ -103,6 +110,7 @@ class PhotoDetailActivity : BaseActivity() {
             transformations(CircleCropTransformation())
         }
         tvName.text = userName
+            //userName
         imgPhotoDetail.setOnClickListener {
             val intent = Intent(this, PhotoViewActivity::class.java).apply {
                 putExtra("image_regular", imgSource)
@@ -112,37 +120,20 @@ class PhotoDetailActivity : BaseActivity() {
         }
         binding.vUserDetail.setOnClickListener {
             val intent = Intent(this, UserActivity::class.java).apply {
-                putExtra("text_user_name", userName)
+               // putExtra("text_user_name", userName)
                 putExtra("user_profile", userProfile)
                 putExtra("username", username)
             }
             startActivity(intent)
         }
 
-        fileName = "$userName-$id.jpg"
+       // fileName = "$userName-$id.jpg"
 
         viewModel.getLiveData.observe(this) {
             val photo = it.getOrNull()
             if (photo != null) {
                 binding.apply {
-                    tvView.text = photo.views?.toPrettyString()
-                    tvDownload.text = photo.downloads?.toPrettyString()
-                    tvLikes.text = photo.likes?.toPrettyString()
-                    tvDate.text = photo.created_at.substring(0, 10)
-                    tvDesc.text = photo.description ?: "The artist did not add a description..."
-                    tvWH.text = getString(R.string.width_height, photo.width, photo.height)
-                    photo.exif?.let { exif ->
-                        if (exif.model != null)
-                            linearCamera.visibility = View.VISIBLE
-                        tvCamera.text = exif.model
-                        tvCameraDetail.text = getString(
-                            R.string.camera_detail,
-                            exif.aperture,
-                            exif.exposure_time,
-                            exif.focal_length,
-                            exif.iso
-                        )
-                    }
+                    binding.photo = photo
                     photo.location?.let { location ->
                         if (photo.location.city != null || photo.location.country != null)
                             linearLocation.visibility = View.VISIBLE
@@ -163,8 +154,13 @@ class PhotoDetailActivity : BaseActivity() {
                     }
                     photo.urls.raw?.let { raw ->
                         imgDownload.setOnClickListener {
-                            if (fileExists(fileName, path)) {
-                                showFileExistsDialog(this@PhotoDetailActivity) { downloadPhotos(raw, path) }
+                            if (fileExists(fileName)) {
+                                showFileExistsDialog(this@PhotoDetailActivity) {
+                                    downloadPhotos(
+                                        raw,
+                                        path
+                                    )
+                                }
                             } else {
                                 downloadPhotos(raw, path)
                             }
@@ -172,11 +168,8 @@ class PhotoDetailActivity : BaseActivity() {
                     }
                 }
             } else {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    viewModel.getPhotos(id)
-                }, 10000)
-
-                showSnackBar(imgPhotoDetail, "Get details failure, Retry...")
+                App.ACCESS_KEY = "" //Enter another key to combat API limit
+                showSnackBar(imgPhotoDetail, "the API reaches limit, Change KEY...")
             }
         }
     }
@@ -252,8 +245,6 @@ class PhotoDetailActivity : BaseActivity() {
         }
 
     }
-
-
 }
 //if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 

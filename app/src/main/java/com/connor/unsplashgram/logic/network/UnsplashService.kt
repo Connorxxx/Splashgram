@@ -15,14 +15,17 @@ interface UnsplashService {
         @Query("client_id") clientId: String,
         @Query("query") criteria: String,
         @Query("page") page: Int,
-        @Query("per_page") pageSize: Int
+        @Query("per_page") pageSize: Int,
+        @Query("order_by") order_by: String?,
+        @Query("orientation") orientation: String?
     ): Call<SearchResponse>
 
     @GET("photos")
     fun loadPhotos(
         @Query("client_id") clientId: String,
         @Query("page") page: Int,
-        @Query("per_page") pageSize: Int
+        @Query("per_page") pageSize: Int,
+        @Query("order_by") order_by: String?
         ): Call<List<UnsplashPhoto>>
 
     @GET("photos/{id}")

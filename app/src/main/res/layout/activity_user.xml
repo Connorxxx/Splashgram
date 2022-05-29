@@ -5,20 +5,31 @@
 
     <data>
 
+        <import type="com.connor.unsplashgram.logic.tools.NumberExtKt" />
+        <import type="android.view.View"/>
+        <import type="android.text.TextUtils"/>
+
+        <variable
+            name="user"
+            type="com.connor.unsplashgram.logic.model.User" />
+
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+
 
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
+
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stateListAnimator="@animator/show_toolbar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
+
                 android:id="@+id/toolbar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -29,6 +40,8 @@
                 app:toolbarId="@+id/toolbarUser">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:animateLayoutChanges="true"
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="?attr/actionBarSize"
@@ -87,6 +100,8 @@
                         android:id="@+id/tv_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:visibility="@{TextUtils.isEmpty(user.id) ? View.GONE : View.VISIBLE}"
+                        android:text='@{"@" + user.username}'
                         android:layout_marginTop="-5dp"
                         android:textSize="17sp"
                         app:layout_constraintStart_toStartOf="@+id/tvUserName"
@@ -98,6 +113,7 @@
                         style="@style/TextAppearance.MaterialComponents.Subtitle1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:text="@{user.bio ?? `Download free, beautiful high-quality photos curated by ` + user.name}"
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="16dp"
                         android:lineSpacingExtra="-4dp"
@@ -108,13 +124,15 @@
                         tools:text="bio" />
 
                     <LinearLayout
+                        android:animateLayoutChanges="true"
+
                         android:id="@+id/linear_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="-4dp"
                         android:layout_marginTop="8dp"
                         android:orientation="horizontal"
-                        android:visibility="gone"
+                        android:visibility="@{TextUtils.isEmpty(user.location) ? View.GONE : View.VISIBLE}"
                         app:layout_constraintStart_toStartOf="@+id/tv_bio"
                         app:layout_constraintTop_toBottomOf="@+id/tv_bio"
                         tools:visibility="visible">
@@ -134,7 +152,7 @@
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="1dp"
                             android:layout_weight="1"
-                            android:text="TextView"
+                            android:text="@{user.location}"
                             android:textSize="18sp" />
                     </LinearLayout>
 
@@ -143,6 +161,7 @@
                         style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@{NumberExtKt.toPrettyString(user.following_count)}"
                         android:layout_marginTop="8dp"
                         android:textSize="17sp"
                         android:textStyle="bold"
@@ -166,6 +185,7 @@
                         style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@{NumberExtKt.toPrettyString(user.followers_count)}"
                         android:layout_marginStart="16dp"
                         android:textSize="17sp"
                         android:textStyle="bold"
@@ -199,7 +219,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
-                        android:visibility="gone"
+                        android:visibility="@{TextUtils.isEmpty(user.portfolio_url) ? View.GONE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@+id/img_user_html"
                         app:layout_constraintEnd_toStartOf="@+id/img_user_html"
                         app:layout_constraintTop_toTopOf="@+id/img_user_html"
@@ -208,6 +228,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.appcompat.widget.Toolbar
+
                     android:id="@+id/toolbarUser"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
@@ -215,9 +236,7 @@
                     android:theme="@style/AppToolbar"
                     app:contentInsetStartWithNavigation="0dp"
                     app:title=" "
-                    app:layout_collapseMode="pin">
-
-                </androidx.appcompat.widget.Toolbar>
+                    app:layout_collapseMode="pin" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -226,18 +245,23 @@
 
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <androidx.core.widget.NestedScrollView
+
                 android:id="@+id/nested_user_photos"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fillViewport="true">
 
                 <LinearLayout
+                    android:animateLayoutChanges="true"
+
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -245,9 +269,8 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_user_photos"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                    </androidx.recyclerview.widget.RecyclerView>
+                        android:layout_height="match_parent"
+                        android:visibility="gone" />
 
                     <ProgressBar
                         android:id="@+id/progressBar"

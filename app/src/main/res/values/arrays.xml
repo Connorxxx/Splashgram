@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="dialog_choice_array">
+        <item>Latest</item>
+        <item>Oldest</item>
+        <item>Popular</item>
+    </string-array>
+</resources>

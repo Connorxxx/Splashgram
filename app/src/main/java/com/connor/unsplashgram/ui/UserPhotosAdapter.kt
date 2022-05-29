@@ -42,22 +42,50 @@ class UserPhotosAdapter(private val ctx: Context, private val photosList: List<U
         )
         val holder = ViewHolder(binding)
         holder.getBinding().imgLoad.setOnClickListener {
-            val imgSource = holder.getBinding().photo?.urls?.regular
-            val imgFull = holder.getBinding().photo?.urls?.full
-            val userName = holder.getBinding().photo?.user?.name
-            val userProfile = holder.getBinding().photo?.user?.profile_image?.large
-            val id = holder.getBinding().photo?.id
-            val username = holder.getBinding().photo?.user?.username
+            val imgSource = holder.getBinding().photo?.urls?.regular ?: ""
+            val imgFull = holder.getBinding().photo?.urls?.full ?: ""
+            val imgRaw = holder.getBinding().photo?.urls?.raw ?: ""
+            val userName = holder.getBinding().photo?.user?.name ?: ""
+            val userProfile = holder.getBinding().photo?.user?.profile_image?.large ?: ""
+            val id = holder.getBinding().photo?.id ?: ""
+            val username = holder.getBinding().photo?.user?.username ?: ""
+
+            App.imgSource = imgSource
+            App.imgFull = imgFull
+            App.imgRaw = imgRaw
+            App.userName = userName
+            App.userProfile = userProfile
+            App.id = id
+            App.username = username
 
             val intent = Intent(ctx, PhotoDetailActivity::class.java).apply {
-                putExtra("image_regular", imgSource)
-                putExtra("image_full", imgFull)
-                putExtra("text_user_name", userName)
-                putExtra("user_profile", userProfile)
-                putExtra("id", id)
-                putExtra("username", username)
+//                putExtra("image_regular", imgSource)
+//                putExtra("image_full", imgFull)
+//                putExtra("text_user_name", userName)
+//                putExtra("user_profile", userProfile)
+//                putExtra("id", id)
+//                putExtra("username", username)
             }
             ctx.startActivity(intent)
+        }
+        holder.getBinding().imgLoad.setOnLongClickListener {
+            val imgSource = holder.getBinding().photo?.urls?.regular ?: ""
+            val imgFull = holder.getBinding().photo?.urls?.full ?: ""
+            val imgRaw = holder.getBinding().photo?.urls?.raw ?: ""
+            val userName = holder.getBinding().photo?.user?.name ?: ""
+            val id = holder.getBinding().photo?.id ?: ""
+
+            App.imgSource = imgSource
+            App.imgFull = imgFull
+            App.imgRaw = imgRaw
+            App.userName = userName
+            App.id = id
+
+            val intent = Intent(ctx, PhotoViewActivity::class.java).apply {
+
+            }
+            ctx.startActivity(intent)
+            return@setOnLongClickListener true
         }
 
         return ViewHolder(binding)

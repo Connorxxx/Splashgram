@@ -18,7 +18,7 @@ data class UnsplashPhoto(
     val views: Int?,
     val downloads: Int?,
     val likes: Int?,
-    val description: String?,
+    val description: String? = "The artist did not add a description...",
     val urls: UnsplashUrls,
     val links: UnsplashLinks,
     val user: UnsplashUser,
@@ -26,7 +26,6 @@ data class UnsplashPhoto(
     val location: UnsplashLocation?,
     val tags: List<Tag>?,
 )
-
 
 data class UnsplashUrls(
     val thumb: String?,

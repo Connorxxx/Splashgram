@@ -58,13 +58,16 @@
                         android:layout_marginBottom="5dp"
                         android:visibility="gone"
                         app:srcCompat="@drawable/ic_baseline_clear_24"
-                        tools:visibility="visible" />
+                        tools:visibility="visible"
+                        android:animateLayoutChanges="true"
+                        />
 
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:animateLayoutChanges="true"
             android:id="@+id/srlSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -72,11 +75,26 @@
 
 
             <androidx.recyclerview.widget.RecyclerView
+
                 android:id="@+id/rvSearch"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/e_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:text="Filter"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:backgroundTint="@color/black"
+            app:icon="@drawable/ic_baseline_filter_list_24"
+            app:iconTint="@color/white"
+            tools:visibility="visible" />
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

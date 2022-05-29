@@ -3,19 +3,27 @@ package com.connor.unsplashgram
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import com.drake.brv.BR
-import com.drake.brv.utils.BRV
-import com.drake.net.NetConfig
 import com.kongqw.network.monitor.NetworkMonitorManager
 
 class App : Application() {
 
-    @SuppressLint("StaticFieldLeak")
+    var username = ""
+
+
     companion object {
         const val TAG = "UnsplashGram"
-        const val ACCESS_KEY = "Input your own key"
+        var ACCESS_KEY = "" //Input your own KEY
         const val SECRET_KEY = ""
 
+        var userName = ""
+        var imgSource = ""
+        var imgFull = ""
+        var imgRaw = ""
+        var userProfile = ""
+        var id = ""
+        var username = ""
+
+        @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
     }
 

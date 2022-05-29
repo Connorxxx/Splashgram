@@ -7,4 +7,9 @@
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@android:string/search_go"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/filter"
+        android:icon="@drawable/ic_baseline_filter_list_24"
+        android:title="ffilter"
+        app:showAsAction="always" />
 </menu>

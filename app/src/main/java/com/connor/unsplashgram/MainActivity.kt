@@ -1,14 +1,14 @@
 package com.connor.unsplashgram
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -26,6 +26,7 @@ import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
 import com.kongqw.network.monitor.util.NetworkStateUtils
+import java.io.File
 
 class MainActivity : BaseActivity() {
     private val TAG = "MainActivity"
@@ -63,6 +64,7 @@ class MainActivity : BaseActivity() {
         super.onDestroy()
         NetworkMonitorManager.getInstance().unregister(this)
     }
+
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
         rvMain.layoutManager = layoutManager
@@ -70,16 +72,18 @@ class MainActivity : BaseActivity() {
             preloadItemCount = 4
             onPreload = {
                 viewModel.loadPage(++viewModel.page)
+                Log.d(TAG, "initRecyclerView: ${viewModel.page}")
             }
         }
         rvMain.adapter = adapter
     }
 
-   // @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged")
     private fun initViewModel() {
         swipeRefresh.setOnRefreshListener {
             viewModel.loadList.clear()
-            viewModel.loadPage(1)
+            viewModel.page = 1
+            viewModel.loadPage(viewModel.page)
         }
         viewModel.loadPage(viewModel.page)
         viewModel.loadPageLiveData.observe(this, Observer {
@@ -87,31 +91,90 @@ class MainActivity : BaseActivity() {
             if (load != null) {
                 //viewModel.loadList.clear()
                 viewModel.loadList.addAll(load)
+               // viewModel.loadList.removeAt(0)
                 adapter.notifyItemChanged(load.lastIndex)
-               // adapter.notifyDataSetChanged()
+                // adapter.notifyDataSetChanged()
                 swipeRefresh.isRefreshing = false
             } else {
-                showSnackBar(rvMain, "Something went wrong...")
-               // viewModel.loadPage(viewModel.page)
+                it.exceptionOrNull()?.printStackTrace()
+                showSnackBar(rvMain, "the API reaches limit...")
+                // viewModel.loadPage(viewModel.page)
+            }
+        })
+        viewModel.orderLiveData.observe(this, Observer {
+            val order = it.getOrNull()
+            if (order != null) {
+                Log.d(TAG, "initViewModel: ${viewModel.page}")
+               // rvMain.scrollToPosition(0)
+                viewModel.loadList.clear()
+                viewModel.loadList.addAll(order)
+                viewModel.loadList.removeAt(0)
+                // adapter.notifyItemRangeChanged(0, order.size)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    rvMain.scrollToPosition(0)
+                    adapter.notifyDataSetChanged()
+                    if (rvMain.visibility == View.GONE) rvMain.visibility = View.VISIBLE
+                },80)
+
+            } else {
+                it.exceptionOrNull()?.printStackTrace()
+                showSnackBar(rvMain, "the API reaches limit...")
             }
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.item_toobar, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
             R.id.search -> {
                 val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
-//                cardSearch.visibility = View.VISIBLE
-//                edSearch.apply {
-//                    viewModel.searchByUrl(this)
-//                }
-//                viewModel.actionDone(edSearch, cardSearch)
+            }
+            R.id.filter -> {
+                val singleChoiceItems = resources
+                    .getStringArray(R.array.dialog_choice_array)
+                val currentSelection = viewModel.itemSelected
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.sort_by)
+                    .setSingleChoiceItems(singleChoiceItems, currentSelection) { dialog, which ->
+                        when (which) {
+                            0 -> {
+                                viewModel.itemSelected = 0
+                                viewModel.orderBy = "latest"
+                                Log.d(TAG, "onOptionsItemSelected: 0 $currentSelection")
+                                if (which != currentSelection) {
+                                    rvMain.visibility = View.GONE
+                                    viewModel.orderPhotos(viewModel.orderBy)
+                                }
+                            }
+                            1 -> {
+                                viewModel.itemSelected = 1
+                                viewModel.orderBy = "oldest"
+                                Log.d(TAG, "onOptionsItemSelected: 1 $currentSelection")
+                                if (which != currentSelection) {
+                                    rvMain.visibility = View.GONE
+                                    viewModel.orderPhotos(viewModel.orderBy)
+                                }
+                            }
+                            2 -> {
+                                viewModel.itemSelected = 2
+                                viewModel.orderBy = "popular"
+                                Log.d(TAG, "onOptionsItemSelected: 2 $currentSelection")
+                                if (which != currentSelection) {
+                                    rvMain.visibility = View.GONE
+                                    viewModel.orderPhotos(viewModel.orderBy)
+                                }
+                            }
+
+                        }
+                        dialog.dismiss()
+                    }
+                    .show()
             }
         }
         return super.onOptionsItemSelected(item)

@@ -3,6 +3,12 @@
     package="com.connor.unsplashgram">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <application
         android:name=".App"
@@ -23,13 +29,12 @@
             android:exported="false" />
         <activity
             android:name=".ui.PhotoViewActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/PhotoViewsActivityTheme"/>
         <activity
             android:name=".ui.PhotoDetailActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
-            android:theme="@style/PhotoDetailActivityTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+            android:theme="@style/PhotoDetailActivityTheme" />
         <activity
             android:name=".ui.SearchActivity"
             android:exported="false" />

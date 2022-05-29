@@ -16,5 +16,10 @@
     <string name="username">"@"%1$s</string>
     <string name="default_bio">Download free, beautiful high-quality photos curated by %1$s</string>
     <string name="total_photos">%1$s Photos</string>
+    <string name="order_latest">Latest</string>
+    <string name="order_oldest">Oldest</string>
+    <string name="order_popular">Popular</string>
+    <string name="sort_by">Sort By</string>
+    <string name="text_view8">Photo by %1$s Spratt on Unsplash</string>
 
 </resources>
