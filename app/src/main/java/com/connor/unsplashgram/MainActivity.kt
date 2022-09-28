@@ -51,6 +51,10 @@ class MainActivity : BaseActivity() {
         NetworkMonitorManager.getInstance().register(this)
 
         setSupportActionBar(toolbarMain)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(false)
+            it.setHomeAsUpIndicator(R.drawable.ic_baseline_home_24)
+        }
         initRecyclerView()
         initViewModel()
 
@@ -130,7 +134,10 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> onBackPressed()
+//            android.R.id.home -> {
+//                val intent = Intent(this, SearchActivity::class.java)
+//                startActivity(intent)
+//            }
             R.id.search -> {
                 val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)

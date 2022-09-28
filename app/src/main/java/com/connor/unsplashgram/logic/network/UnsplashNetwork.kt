@@ -3,6 +3,7 @@ package com.connor.unsplashgram.logic.network
 import android.util.Log
 import android.widget.Toast
 import com.connor.unsplashgram.App
+import com.connor.unsplashgram.App.Companion.TAG
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +36,7 @@ object UnsplashNetwork {
         return suspendCoroutine {
             enqueue(object : Callback<T> {
                 override fun onFailure(call: Call<T>, t: Throwable) {
-                    Log.d(App.TAG, "UnsplashNetwork: onFailure")
+                    Log.d(TAG, "UnsplashNetwork: onFailure")
                     it.resumeWithException(t)
                 }
 
@@ -43,10 +44,10 @@ object UnsplashNetwork {
                     val body = response.body()
                     if (body != null) {
                         it.resume(body)
-                        Log.d(App.TAG, "onResponse: body != null")
+                        Log.d(TAG, "onResponse: body != null")
                     } else {
                         it.resumeWithException(RuntimeException("response body is null"))
-                        Log.d(App.TAG, "onResponse: response body is null")
+                        Log.d(TAG, "onResponse: response body is null")
                     }
                 }
             })

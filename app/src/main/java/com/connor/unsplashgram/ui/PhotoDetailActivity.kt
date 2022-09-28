@@ -52,11 +52,11 @@ class PhotoDetailActivity : BaseActivity() {
     lateinit var downloadScope: NetCoroutineScope
 
     lateinit var manager: NotificationManager
-   // lateinit var fileName: String
     lateinit var imgPhotoDetail: ImageView
     lateinit var tvName: TextView
     lateinit var imgUserProfile: ImageView
-    lateinit var path: String
+ //   lateinit var path: String
+    lateinit var file: File
 
     companion object {
         var fileName = "$userName-$id.jpg"
@@ -77,21 +77,7 @@ class PhotoDetailActivity : BaseActivity() {
 
         viewModel.getPhotos(id)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            path = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES
-            ).absolutePath + "/Splashgram"
-            val file = File(path)
-            if (!file.exists()) file.mkdir()
-            Log.d(App.TAG, "testPath: $path >= Build.VERSION_CODES.R")
-        } else {
-            path = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/Splashgram"
-            val file = File(path)
-            if (!file.exists()) file.mkdir()
-            Log.d(App.TAG, "testPath: $path  !Build.VERSION_CODES.R")
-        }
-
-
+        val file = getAppSpecificAlbumStorageDir("Splashgram")
 
 //        binding.appbar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
 //            val test = verticalOffset + binding.toolBarLayou.height - binding.toolbarDetail.height
@@ -158,17 +144,17 @@ class PhotoDetailActivity : BaseActivity() {
                                 showFileExistsDialog(this@PhotoDetailActivity) {
                                     downloadPhotos(
                                         raw,
-                                        path
+                                        file.path.toString()
                                     )
                                 }
                             } else {
-                                downloadPhotos(raw, path)
+                                downloadPhotos(raw, file.path.toString())
                             }
                         }
                     }
                 }
             } else {
-                App.ACCESS_KEY = "" //Enter another key to combat API limit
+                App.ACCESS_KEY = "bLzTnLl8iuQLKaPweoWUUNJHe4VAYaIEIk4UIjFyB-E" //Enter another key to combat API limit
                 showSnackBar(imgPhotoDetail, "the API reaches limit, Change KEY...")
             }
         }
@@ -243,9 +229,12 @@ class PhotoDetailActivity : BaseActivity() {
                 null, null
             )
         }
-
     }
-}
-//if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
-//   String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myNewFolder";
+    //    path = Environment.getExternalStoragePublicDirectory(
+    //                Environment.DIRECTORY_PICTURES
+    //            ).absolutePath + "/Splashgram"
+
+    //path = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/Splashgram"
+
+}

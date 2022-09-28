@@ -4,6 +4,7 @@ package com.connor.unsplashgram.common
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.*
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
+import com.connor.unsplashgram.App
 import com.google.android.material.appbar.AppBarLayout
 import java.io.File
 
@@ -53,6 +55,27 @@ open class BaseActivity() : AppCompatActivity() {
                 }
             })
         toolbar.setOnTouchListener { v, p1 -> gestureDetector.onTouchEvent(p1) }
+    }
+
+    fun getAppSpecificAlbumStorageDir(albumName: String): File {
+        lateinit var file: File
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            file = File(
+                Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES
+                ).absolutePath, albumName
+            )
+            if (!file.exists()) file.mkdir()
+            Log.d(App.TAG, "testPath: ${file.path} >= Build.VERSION_CODES.R")
+        } else {
+            file = File(
+                Environment.getExternalStorageDirectory().absolutePath + "/Pictures/",
+                albumName
+            )
+            if (!file.exists()) file.mkdir()
+            Log.d(App.TAG, "testPath: ${file.path}  !Build.VERSION_CODES.R")
+        }
+        return file
     }
 
    // fun getIntentString(string: String) = intent.getStringExtra(string)

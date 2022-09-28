@@ -98,8 +98,8 @@ class UserActivity : BaseActivity() {
 //                        }
                         //  Log.d(App.TAG, "onScrollChange: $verticalOffset  $test")
                     })
-                    nestedUserPhotos.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY -> //if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()))
-                        val test = (v!!.getChildAt(0).getMeasuredHeight() - v!!.getMeasuredHeight())
+                    nestedUserPhotos.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, oldScrollY -> //if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()))
+                        val test = (v!!.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())
                         //Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")
                         if (scrollY == test && scrollY > oldScrollY) {
                             //   Log.d(App.TAG, "onScrollChange: $scrollY / $test / true / ")

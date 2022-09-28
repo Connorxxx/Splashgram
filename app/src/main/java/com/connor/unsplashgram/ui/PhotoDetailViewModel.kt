@@ -7,6 +7,7 @@ import androidx.lifecycle.asFlow
 import com.connor.unsplashgram.App
 import com.connor.unsplashgram.logic.Repository
 import com.connor.unsplashgram.logic.model.UnsplashPhoto
+import kotlin.concurrent.thread
 
 class PhotoDetailViewModel : ViewModel() {
 

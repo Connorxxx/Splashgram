@@ -12,7 +12,7 @@ class App : Application() {
 
     companion object {
         const val TAG = "UnsplashGram"
-        var ACCESS_KEY = "" //Input your own KEY
+        var ACCESS_KEY = "FwwjrXyEstpJ_NPZCOggXf_SepXKCr_iDmOt5Z54LS8" //Input your own KEY
         const val SECRET_KEY = ""
 
         var userName = ""

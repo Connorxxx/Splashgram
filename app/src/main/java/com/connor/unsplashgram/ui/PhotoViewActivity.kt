@@ -48,16 +48,17 @@ class PhotoViewActivity : BaseActivity() {
     lateinit var clPhotoZoom: ConstraintLayout
     lateinit var toolbar: Toolbar
 
+    lateinit var file: File
+
    // lateinit var imgFull: String
 
     var fileName = "${App.userName}-${App.id}.jpg"
 
-    val path = "/storage/emulated/0/Pictures/Splashgram"
+    //val path = "/storage/emulated/0/Pictures/Splashgram"
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-      //  val imgSource = getIntentString("image_regular")
-     //   imgFull = getIntentString("image_full") ?: ""
+        file = getAppSpecificAlbumStorageDir("Splashgram")
 
         super.onCreate(savedInstanceState)
         val binding: ActivityPhotoViewBinding =
@@ -70,7 +71,7 @@ class PhotoViewActivity : BaseActivity() {
 
         manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-         hideSystemUI()
+       //  hideSystemUI()
        // supportActionBar?.hide()
         imgViewer.controller.settings
             .setMaxZoom(3f)
@@ -81,7 +82,7 @@ class PhotoViewActivity : BaseActivity() {
             imgSource
         )
 
-        Log.d(App.TAG, "onCreate: $path")
+        Log.d(App.TAG, "onCreate: ${file.path}")
 
         //imgViewer.load(imgSource)
 
@@ -100,7 +101,7 @@ class PhotoViewActivity : BaseActivity() {
         when (item.itemId) {
             R.id.item_set_as -> {
                 if (fileExists(fileName)) {
-                    setWallpaper("$path/$fileName")
+                    setWallpaper("${file.path}/$fileName")
                 } else downloadPhotos(imgRaw)
                val sbView = showSnackBar(imgViewer, "Please waiting...")
                 sbView.setBackgroundTint(ContextCompat.getColor(this, R.color.white))
@@ -116,7 +117,7 @@ class PhotoViewActivity : BaseActivity() {
         val downloadScope = scopeNetLife {
             val file = Get<File>(downloadUrl) {
                 setDownloadFileName(fileName)
-                setDownloadDir(path)
+                setDownloadDir(file)
                 addDownloadListener(object : ProgressListener() {
                     override fun onProgress(p: Progress) {
                         val channel = NotificationChannel(
